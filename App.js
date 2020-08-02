@@ -1,21 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import {View } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native'
+import {createStackNavigator} from '@react-navigation/stack'
+
+import Main from './components/main'
+import Texts from './components/text'
+import Input from './components/input'
+import {data} from './assets/data'
+
+const Stack = createStackNavigator();
 
 export default function App() {
+
+  const [selected, setselected] = useState("1");
+
+  const Text = () => <Texts id={selected} />
+  const Mainc = () => <Main changeId={(id) => setselected(id)}/>
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Main">
+          <Stack.Screen name="Saurav's Diary" component={Mainc} />
+          <Stack.Screen name="Texts" component={Text} options={{title: data.filter(article => article.id==selected)[0].title}} />
+          <Stack.Screen name="Article" component={Input} /> 
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
