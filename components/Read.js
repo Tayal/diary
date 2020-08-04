@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-
-import {data} from '../assets/data'
 import { ScrollView } from 'react-native-gesture-handler'
 
-export default function Texts({id}) {
+export default function Read({data, id}) {
+    console.log('Reading Text');
+
     return (
         <ScrollView>
             <Text style={styles.text}>{data.filter(article => article.id==id)[0].text}</Text>
