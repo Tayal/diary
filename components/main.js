@@ -1,14 +1,12 @@
-import React, { useState, useCallback, useEffect, useContext } from 'react'
-import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native'
-import { ListItem, Icon, Button } from 'react-native-elements'
-import AsyncStorage from '@react-native-community/async-storage' 
-import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/native'
+import React, { useContext } from 'react'
+import { View, FlatList, StyleSheet, RefreshControl } from 'react-native'
+import { ListItem, Icon } from 'react-native-elements'
+import { useNavigation } from '@react-navigation/native'
 import { Context } from '../ContextProvider'
-
 
 export default function Main() {
 
-    const {data, select} = useContext(Context);
+    const {data, setData, select} = useContext(Context);
 
     const navigation = useNavigation();
     const onRefresh = () => navigation.navigate("Article");
@@ -22,6 +20,7 @@ export default function Main() {
             onPress={() => {
                 select(item.id);
                 return navigation.navigate("Texts")}}
+            onLongPress={() => setData(data.filter(article => article.id != item.id))}
         />
     )
 

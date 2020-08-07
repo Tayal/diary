@@ -14,7 +14,7 @@ export default function Input() {
     useFocusEffect(useCallback(() => {
         return () => {
             if(localdata != "") {
-                setData([...data, {id: shortid(), title: 'New Article', text: localdata}])
+                setData([...data, {id: shortid(), title: (new Date).toLocaleString(), text: localdata}])
             }
         }
     }))
