@@ -1,41 +1,17 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native'
 import { ListItem, Icon, Button } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage' 
 import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/native'
+import { Context } from '../ContextProvider'
 
 
-export default function Main({changeId}) {
+export default function Main() {
+
+    const {data, select} = useContext(Context);
 
     const navigation = useNavigation();
-
-    const [refreshing, setRefreshing] = useState(false);
-    //const [data, setData] = useState([]);
-
-    const onRefresh = () => {
-        return navigation.navigate("Article")
-    };
-
-    var data=[];
-
-    useFocusEffect(useCallback(() => {
-
-        (async () => {
-            try {
-                const fetched = await AsyncStorage.getItem('data')
-                if(fetched !== null) {
-                    data = JSON.parse(fetched)
-                    //setData(JSON.parse(fetched))
-                    console.log('main')
-                    console.log(data)
-                }
-            }
-            catch(err) {
-                console.log('Error! Not able to read data in main.', err)
-            }
-        })()
-
-    }, []))
+    const onRefresh = () => navigation.navigate("Article");
 
     render = ({item}) => (
         <ListItem
@@ -43,7 +19,8 @@ export default function Main({changeId}) {
             leftIcon={<Icon name="code" />}
             bottomDivider
             chevron
-            onPress={() => {changeId(item.id);
+            onPress={() => {
+                select(item.id);
                 return navigation.navigate("Texts")}}
         />
     )
@@ -54,7 +31,7 @@ export default function Main({changeId}) {
                 data = {data}
                 key = {item => item.id}
                 renderItem = {render}
-                refreshControl = {<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl = {<RefreshControl refreshing={false} onRefresh={onRefresh} />}
             />
         </View>
     )

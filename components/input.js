@@ -1,41 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { View, TextInput, StyleSheet, AsyncStorage } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
+import { Context } from '../ContextProvider'
+
 const shortid = require('shortid')
 
+export default function Input() {
 
-var data=[];
-(async () => {
-    try {
-        const fetched = await AsyncStorage.getItem('data')
-        if(fetched !== null) {
-            data = JSON.parse(fetched)
-        }
-    }
-    catch(err) {
-        console.log('Error! Not able to read data.')
-    }
-})()
-
-export default function Input({changeValue}) {
-
-    var local = "";
-
-    const addtodata = () => {
-
-        if(local != "") {
-            data.push({
-                id: shortid.generate(),
-                title: Date.now().toString(),
-                text: local,
-            })
-        }
-        
-        AsyncStorage.setItem('data', JSON.stringify(data));
-    }
+    const {data, setData} = useContext(Context);
+    
+    var localdata = ''; 
 
     useFocusEffect(useCallback(() => {
-        return () => addtodata();
+        return () => {
+            if(localdata != "") {
+                setData([...data, {id: shortid(), title: 'New Article', text: localdata}])
+            }
+        }
     }))
 
     return (
@@ -45,7 +26,7 @@ export default function Input({changeValue}) {
                 multiline
                 autoFocus={true}
                 placeholder='Got something on your mind?'
-                onChangeText={text => local=text}
+                onChangeText={text => localdata=text}
             />
         </View>
     )
