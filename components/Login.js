@@ -5,6 +5,7 @@ import {useFonts, GreatVibes_400Regular} from '@expo-google-fonts/great-vibes'
 import { AppLoading } from 'expo';
 import { Context } from '../ContextProvider';
 import { useNavigation } from '@react-navigation/native'
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function Login() {
@@ -23,6 +24,7 @@ export default function Login() {
         return <AppLoading />
     }
     return (
+        <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior='position'>
             <Icon name='clipboard-pencil' type='foundation' size={100} iconStyle={styles.icon} />
             {
@@ -55,6 +57,7 @@ export default function Login() {
                 )
             }
         </KeyboardAvoidingView>
+        </ScrollView>
     )
 }
 
