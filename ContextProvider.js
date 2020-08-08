@@ -7,6 +7,9 @@ export default function ContextProvider(props) {
 
     const [data, setData] = useState([{id:'0', title:'ReadMe', text:'Pull to write new article.\nArticles are autosaved.\nEnjoy!'}])
     const [selected, select] = useState("0");
+    const [editing, edit] = useState(false);
+    const [loggedIn, logIn] = useState(false);
+    const [key, setKey] = useState('')
 
     useEffect(() => {
         (async () => {
@@ -35,7 +38,7 @@ export default function ContextProvider(props) {
     }, [data])
 
     return (
-        <Context.Provider value={{data, setData, selected, select}}>
+        <Context.Provider value={{data, setData, selected, select, editing, edit, loggedIn, logIn, key, setKey}}>
             {props.children}
         </Context.Provider>
     )

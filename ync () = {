@@ -1,0 +1,114 @@
+[33mcommit 3ba75be2976763aa4cbb1fb0ea6ab6df75511678[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Saurav <sauravtayal7@gmail.com>
+Date:   Fri Aug 7 19:55:51 2020 +0530
+
+    With Context and Asyncstorage
+
+[1mdiff --git a/ContextProvider.js b/ContextProvider.js[m
+[1mindex 8bc4fe3..d993061 100644[m
+[1m--- a/ContextProvider.js[m
+[1m+++ b/ContextProvider.js[m
+[36m@@ -1,4 +1,5 @@[m
+[31m-import React, {createContext, useState} from 'react'[m
+[32m+[m[32mimport React, {createContext, useState, useEffect} from 'react'[m
+[32m+[m[32mimport AsyncStorage from '@react-native-community/async-storage';[m
+ [m
+ export const Context = createContext();[m
+ [m
+[36m@@ -7,6 +8,32 @@[m [mexport default function ContextProvider(props) {[m
+     const [data, setData] = useState([{id:'0', title:'ReadMe', text:'Pull to write new article.\nArticles are autosaved.\nEnjoy!'}])[m
+     const [selected, select] = useState("0");[m
+ [m
+[32m+[m[32m    useEffect(() => {[m
+[32m+[m[32m        (async () => {[m
+[32m+[m[32m            try {[m
+[32m+[m[32m                const fetched = await AsyncStorage.getItem('data')[m
+[32m+[m[32m                if(fetched !== null) {[m
+[32m+[m[32m                    console.log('Successfully Fetched data once!')[m
+[32m+[m[32m                    setData(JSON.parse(fetched))[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch(err) {[m
+[32m+[m[32m                console.log(err)[m
+[32m+[m[32m            }[m
+[32m+[m[32m        })()[m
+[32m+[m[32m    }, []);[m
+[32m+[m
+[32m+[m[32m    useEffect(() => {[m
+[32m+[m[32m        (async () => {[m
+[32m+[m[32m            try {[m
+[32m+[m[32m                await AsyncStorage.setItem('data', JSON.stringify(data));[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch(e) {[m
+[32m+[m[32m                console.log("Error! ", e);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        })()[m
+[32m+[m[32m    }, [data])[m
+[32m+[m
+     return ([m
+         <Context.Provider value={{data, setData, selected, select}}>[m
+             {props.children}[m
+[36m@@ -15,17 +42,5 @@[m [mexport default function ContextProvider(props) {[m
+ }[m
+ [m
+   [m
+[31m-  // (async () => {[m
+[31m-  //     try {[m
+[31m-  //         const fetched = await AsyncStorage.getItem('data')[m
+[31m-  //         if(fetched !== null) {[m
+[31m-  //             console.log('Successfully Fetched data on stack screen')[m
+[31m-  //             data = JSON.parse(fetched)[m
+[31m-  //             console.log(data)[m
+[31m-  //         }[m
+[31m-  //     }[m
+[31m-  //     catch(err) {[m
+[31m-  //         console.log(err)[m
+[31m-  //     }[m
+[31m-  // })()[m
+[41m+[m
+ [m
+[1mdiff --git a/components/input.js b/components/input.js[m
+[1mindex 367a766..6780ced 100644[m
+[1m--- a/components/input.js[m
+[1m+++ b/components/input.js[m
+[36m@@ -14,7 +14,7 @@[m [mexport default function Input() {[m
+     useFocusEffect(useCallback(() => {[m
+         return () => {[m
+             if(localdata != "") {[m
+[31m-                setData([...data, {id: shortid(), title: 'New Article', text: localdata}])[m
+[32m+[m[32m                setData([...data, {id: shortid(), title: (new Date).toLocaleString(), text: localdata}])[m
+             }[m
+         }[m
+     }))[m
+[1mdiff --git a/components/main.js b/components/main.js[m
+[1mindex 5b2818f..856699e 100644[m
+[1m--- a/components/main.js[m
+[1m+++ b/components/main.js[m
+[36m@@ -1,14 +1,12 @@[m
+[31m-import React, { useState, useCallback, useEffect, useContext } from 'react'[m
+[31m-import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native'[m
+[31m-import { ListItem, Icon, Button } from 'react-native-elements'[m
+[31m-import AsyncStorage from '@react-native-community/async-storage' [m
+[31m-import { useNavigation, useFocusEffect, useIsFocused } from '@react-navigation/native'[m
+[32m+[m[32mimport React, { useContext } from 'react'[m
+[32m+[m[32mimport { View, FlatList, StyleSheet, RefreshControl } from 'react-native'[m
+[32m+[m[32mimport { ListItem, Icon } from 'react-native-elements'[m
+[32m+[m[32mimport { useNavigation } from '@react-navigation/native'[m
+ import { Context } from '../ContextProvider'[m
+ [m
+[31m-[m
+ export default function Main() {[m
+ [m
+[31m-    const {data, select} = useContext(Context);[m
+[32m+[m[32m    const {data, setData, select} = useContext(Context);[m
+ [m
+     const navigation = useNavigation();[m
+     const onRefresh = () => navigation.navigate("Article");[m
+[36m@@ -22,6 +20,7 @@[m [mexport default function Main() {[m
+             onPress={() => {[m
+                 select(item.id);[m
+                 return navigation.navigate("Texts")}}[m
+[32m+[m[32m            onLongPress={() => setData(data.filter(article => article.id != item.id))}[m
+         />[m
+     )[m
+ [m
