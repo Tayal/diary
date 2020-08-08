@@ -9,6 +9,10 @@ export default function Main() {
     const {data, setData, select, loggedIn} = useContext(Context);
 
     const navigation = useNavigation();
+    navigation.setOptions({
+        headerTitleStyle: {textAlign: 'center', fontFamily: 'serif', fontSize: 25,}
+    })
+    
     const onRefresh = () => navigation.navigate("Input");
 
     render = ({item}) => (

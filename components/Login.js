@@ -4,10 +4,18 @@ import {Icon} from 'react-native-elements'
 import {useFonts, GreatVibes_400Regular} from '@expo-google-fonts/great-vibes'
 import { AppLoading } from 'expo';
 import { Context } from '../ContextProvider';
+import { useNavigation } from '@react-navigation/native'
+
 
 export default function Login() {
 
-    const {key, setKey, logIn} = useContext(Context);
+    const navigation = useNavigation();
+    navigation.setOptions({
+        headerTitleStyle: {textAlign: 'center', fontFamily: 'serif', fontSize: 25,}
+    })
+
+    const {cred, setCred, logIn} = useContext(Context);
+    var localName = '', localKey = '';
 
     let [fontsLoaded] = useFonts({GreatVibes_400Regular});
 
@@ -16,13 +24,36 @@ export default function Login() {
     }
     return (
         <KeyboardAvoidingView style={styles.container} behavior='position'>
-            <Icon name='lock' type='feather' size={100} iconStyle={styles.icon} />
-            <Text style={styles.text}>Saurav's Diary</Text>
-            <TextInput style={styles.input} placeholder='Enter the Key'
-                        onChangeText={text => {
-                            if(text == key)
-                                logIn(true);
+            <Icon name='clipboard-pencil' type='foundation' size={100} iconStyle={styles.icon} />
+            {
+                !cred.firstTime ? (
+                    <>
+                        {(cred.key=='') ? logIn(true) : null}
+                        <Text style={styles.text}>{(cred.name ? cred.name+"'s" : 'My')+" Diary"}</Text>
+                        <TextInput style={styles.input} placeholder='Enter the Key'
+                                    onChangeText={text => {
+                                        if(text == cred.key)
+                                            logIn(true);
                         }}/>
+                    </>
+                ) : (
+                    <>
+                        <Text style={styles.text}>My Diary</Text>
+                        <TextInput style={styles.input} placeholder='Enter your Name...'
+                                    onChangeText={text => localName=text
+                        }/>
+                        <TextInput style={{...styles.input, marginTop:5}} placeholder='Enter the Key...'
+                                    onChangeText={text => localKey=text
+                        }/>
+                        <Icon name='login' type='simple-line-icon' 
+                                iconStyle={styles.login}
+                                onPress={() => {
+                                    setCred({firstTime: false, name: localName, key: localKey});
+                                }}
+                        />
+                    </>
+                )
+            }
         </KeyboardAvoidingView>
     )
 }
@@ -37,6 +68,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 95,
     },
+    login: {
+        padding: 10,
+        marginTop: 5,
+    },
     text: {
         marginTop: 100,
         textAlign: 'center',
@@ -45,11 +80,12 @@ const styles = StyleSheet.create({
     },
     input: {
         backgroundColor: 'white',
-        borderRadius: 10,
+        borderRadius: 100,
         borderWidth: 0.5,
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingVertical: 10,
         marginHorizontal: 50,
         marginTop: 100,
+        fontSize: 17,
     }
 })

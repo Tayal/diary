@@ -9,14 +9,27 @@ export default function ContextProvider(props) {
     const [selected, select] = useState("0");
     const [editing, edit] = useState(false);
     const [loggedIn, logIn] = useState(false);
-    const [key, setKey] = useState('')
+    const [cred, setCred] = useState({firstTime: true, name: '', key: ''})
 
     useEffect(() => {
         (async () => {
             try {
-                const fetched = await AsyncStorage.getItem('data')
+                var fetched = await AsyncStorage.getItem('cred')
                 if(fetched !== null) {
-                    console.log('Successfully Fetched data once!')
+                    setCred(JSON.parse(fetched))
+                }
+            }
+            catch(err) {
+                console.log(err)
+            }
+        })()
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                var fetched = await AsyncStorage.getItem('data')
+                if(fetched !== null) {
                     setData(JSON.parse(fetched))
                 }
             }
@@ -32,18 +45,27 @@ export default function ContextProvider(props) {
                 await AsyncStorage.setItem('data', JSON.stringify(data));
             }
             catch(e) {
-                console.log("Error! ", e);
+                console.log("Error storing Data! ", e);
             }
         })()
     }, [data])
 
+    useEffect(() => {
+        (async () => {
+            try {
+                await AsyncStorage.setItem('cred', JSON.stringify(cred));
+            }
+            catch(e) {
+                console.log("Error while storing Credentials! ", e);
+            }
+        })()
+    }, [cred])
+
     return (
-        <Context.Provider value={{data, setData, selected, select, editing, edit, loggedIn, logIn, key, setKey}}>
+        <Context.Provider value={{data, setData, selected, select, editing, edit, loggedIn, logIn, cred, setCred}}>
             {props.children}
         </Context.Provider>
     )
 }
 
   
-
-

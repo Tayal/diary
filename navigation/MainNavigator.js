@@ -12,14 +12,14 @@ const Stack = createStackNavigator();
 
 export default function MainNavigator() {
 
-    const {loggedIn, logIn} = useContext(Context);
+    const {loggedIn, logIn, cred} = useContext(Context);
 
     return (
         <NavigationContainer>
           <Stack.Navigator>
             {loggedIn ? (
               <>
-                <Stack.Screen name="Saurav's Diary" component={Main} />
+                <Stack.Screen name={(cred.name ? cred.name+"'s" : 'My') + ' Diary'} component={Main} />
                 <Stack.Screen name="Reading" component={Read} />
                 <Stack.Screen name="Input" component={Input} /> 
               </>
